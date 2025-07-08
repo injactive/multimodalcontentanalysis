@@ -39,7 +39,7 @@ class AnalysisRequest(BaseModel):
     )
     
     text: str = Field(
-        ...,
+        None,
         min_length=1,
         max_length=5000,
         description="Text content to analyze"
@@ -185,11 +185,11 @@ class AnalysisResponse(BaseModel):
         default_factory=datetime.utcnow,
         description="Analysis timestamp"
     )
-    content_type: ContentType = Field(..., description="Type of content analyzed")
-    features: MultiModalFeatures = Field(..., description="Extracted features")
-    prediction: EngagementPrediction = Field(..., description="Engagement prediction")
-    processing_time: float = Field(..., ge=0, description="Processing time in seconds")
-    model_version: str = Field(default="2.0.0", description="Model version used")
+    content_type: ContentType = Field(None, description="Type of content analyzed")
+    features: MultiModalFeatures = Field(None, description="Extracted features")
+    prediction: EngagementPrediction = Field(None, description="Engagement prediction")
+    processing_time: float = Field(None, ge=0, description="Processing time in seconds")
+    model_version: str = Field(default="0.0.1", description="Model version used")
 
 
 class HealthCheckResponse(BaseModel):
@@ -206,7 +206,7 @@ class HealthCheckResponse(BaseModel):
         default_factory=datetime.utcnow,
         description="Health check timestamp"
     )
-    version: str = Field(default="2.0.0", description="API version")
+    version: str = Field(default="0.0.1", description="API version")
     uptime: float = Field(..., ge=0, description="Service uptime in seconds")
     models_loaded: bool = Field(..., description="Whether ML models are loaded")
 

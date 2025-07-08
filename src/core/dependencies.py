@@ -8,11 +8,9 @@ separation of concerns and testability.
 from typing import Optional, Dict, Any
 from functools import lru_cache
 import time
-import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, HTTPException, status
-import structlog
+from fastapi import HTTPException, status
 from src.services.jinaclip_feature_extraction import JinaCLIPFeatureExtractionService
 from ..utils.logger import get_logger
 from ..utils.mlflow_tracker import MLflowTracker

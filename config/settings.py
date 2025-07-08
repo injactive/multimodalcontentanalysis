@@ -17,7 +17,7 @@ class APISettings(BaseSettings):
     
     # Application Settings
     app_name: str = Field(default="Multi-Modal Content Analysis API", description="Application name")
-    app_version: str = Field(default="2.0.0", description="Application version")
+    app_version: str = Field(default="0.0.1", description="Application version")
     debug: bool = Field(default=False, description="Debug mode")
     
     # Server Settings
@@ -43,7 +43,7 @@ class APISettings(BaseSettings):
     api_key: Optional[str] = Field(default=None, description="API key for authentication")
     max_request_size: int = Field(default=10 * 1024 * 1024, description="Max request size in bytes (10MB)")
     
-    # ML    # Model Configuration - JinaCLIP v2
+    # ML Model Configuration - JinaCLIP v2
     model_name: str = Field(
         default="jinaai/jina-clip-v2", 
         description="JinaCLIP v2 model name for multimodal embeddings"
