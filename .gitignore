@@ -1,0 +1,5 @@
+
+# folder
+__pycache__
+.venv
+mlruns
