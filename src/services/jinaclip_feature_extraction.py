@@ -125,7 +125,7 @@ class JinaCLIPFeatureExtractionService:
             # Set model to evaluation mode
             self.model.eval()
             
-            self.logger.info("JinaCLIP v2 feature extraction service initialized successfully")
+            self.logger.info("JinaCLIP feature extraction service initialized successfully")
             
         except Exception as e:
             self.logger.error(f"Failed to initialize JinaCLIP v2 model: {e}")
@@ -241,7 +241,9 @@ class JinaCLIPFeatureExtractionService:
                 "JinaCLIP v2 feature extraction completed",
                 request_id=request_id,
                 processing_time=processing_time,
-                content_coherence=content_coherence
+                content_coherence=content_coherence,
+                image_features=image_features,
+                text_image_similarity=text_image_similarity
             )
             
             # Return the extracted features in a structured format
@@ -310,16 +312,19 @@ class JinaCLIPFeatureExtractionService:
         """Extract image features using JinaCLIP v2."""
         
         # Validate the image URL to ensure it's safe
-        self._validate_url(image_url)
+        self._validate_url(str(image_url))
+        self.logger.info("validation done")
         
         # Check cache first before downloading the image again
-        cache_key = self._generate_cache_key(image_url, "image")
+        cache_key = self._generate_cache_key(str(image_url), "image")
         if cache_key in self._feature_cache:
             return self._feature_cache[cache_key]
+        self.logger.info("cache key done")
         
         try:
             # Download image from the provided URL
-            image_data = await self.http_client.get_bytes(image_url)
+            image_data = await self.http_client.download_image(str(image_url))
+            self.logger.info("download done")
             
             # Validate the image size to ensure it's not too large
             if len(image_data) > self.settings.max_image_file_size:
@@ -342,8 +347,8 @@ class JinaCLIPFeatureExtractionService:
                 width, height = image.size
             
             # Extract image embeddings using JinaCLIP v2
-            image_embedding = await self._get_image_embedding(image)
-            
+            image_embedding = self.model.encode_image(str(image_url), truncate_dim=512)
+
             # Convert image to base64 for storage
             buffer = io.BytesIO()
             image.save(buffer, format='JPEG', quality=85)
@@ -369,51 +374,6 @@ class JinaCLIPFeatureExtractionService:
             self.logger.error(f"Image feature extraction failed: {e}")
             raise
     
-    async def _analyze_sentiment_jinaclip(self, text: str) -> tuple[float, str]:
-        """Analyze sentiment using JinaCLIP v2 embeddings and keyword matching."""
-        
-        # Keyword-based sentiment analysis
-        text_lower = text.lower()
-        positive_count = sum(1 for word in self.positive_keywords if word in text_lower)
-        negative_count = sum(1 for word in self.negative_keywords if word in text_lower)
-        
-        # Calculate base sentiment score
-        total_sentiment_words = positive_count + negative_count
-        if total_sentiment_words > 0:
-            sentiment_score = (positive_count - negative_count) / total_sentiment_words
-        else:
-            sentiment_score = 0.0
-        
-        # Enhance with JinaCLIP v2 embeddings (simplified approach)
-        try:
-            # Get text embedding
-            text_embedding = await self._get_text_embedding(text)
-            
-            # Use embedding magnitude as confidence modifier
-            if text_embedding is not None:
-                embedding_magnitude = np.linalg.norm(text_embedding)
-                confidence_modifier = min(embedding_magnitude / 10.0, 1.0)
-                sentiment_score *= confidence_modifier
-        
-        except Exception as e:
-            self.logger.warning(f"JinaCLIP sentiment enhancement failed: {e}")
-        
-        # Normalize sentiment score to [-1, 1] range
-        sentiment_score = max(-1.0, min(1.0, sentiment_score))
-        
-        # Determine sentiment label
-        if sentiment_score > 0.1:
-            sentiment_label = "positive"
-        elif sentiment_score < -0.1:
-            sentiment_label = "negative"
-        else:
-            sentiment_label = "neutral"
-        
-        # Convert to [0, 1] range for consistency
-        normalized_score = (sentiment_score + 1.0) / 2.0
-        
-        return normalized_score, sentiment_label
-    
     async def _analyze_sentiment_jinaclip_cosine_similarity(self, text: str) -> tuple[float, str]:
         
         label_texts = ["This is a positive statement.", 
@@ -422,11 +382,11 @@ class JinaCLIPFeatureExtractionService:
         # Enhance with JinaCLIP v2 embeddings (simplified approach)
         try:
             # Get text embedding
-            text_embedding = await self._get_text_embedding(text)
+            text_embedding = self.model.encode_text(text, truncate_dim=512)
             
             # Use embedding magnitude as confidence modifier
             if text_embedding is not None:
-                label_embeddings = [await self._get_text_embedding(lbl) for lbl in label_texts]
+                label_embeddings = [self.model.encode_text(lbl, truncate_dim=512) for lbl in label_texts]
                 sims = cosine_similarity([text_embedding], label_embeddings)[0]
                 sentiment_label = ["positive", "negative", "neutral"][np.argmax(sims)]
                 confidence = max(sims)
@@ -466,8 +426,9 @@ class JinaCLIPFeatureExtractionService:
         """Get image embedding using JinaCLIP v2."""
         try:
             with torch.no_grad():
+                self.logger.warning("torch.no_grad")
                 # Preprocess image using the defined processor if available
-                if self.processor:
+                if False: #self.processor:
                     inputs = self.processor(images=image, return_tensors="pt")
                 else:
                     # Fallback to manual preprocessing if no processor is defined
@@ -478,6 +439,7 @@ class JinaCLIPFeatureExtractionService:
                         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                     ])
                     inputs = {"pixel_values": transform(image).unsqueeze(0)}
+                    self.logger.warning("inputs")
                 
                 # Move inputs to GPU if available for faster computation
                 if torch.cuda.is_available():
@@ -499,17 +461,11 @@ class JinaCLIPFeatureExtractionService:
         """Calculate text-image similarity using JinaCLIP v2."""
         try:
             # Get text embedding using previously defined method
-            text_embedding = await self._get_text_embedding(text)
-            
-            # Download and process the image from the provided URL
-            image_data = await self.http_client.get_bytes(image_url)
-            image = Image.open(io.BytesIO(image_data))
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
-            
+            text_embedding = self.model.encode_text(text, truncate_dim=512)
+        
             # Extract image embedding using previously defined method
-            image_embedding = await self._get_image_embedding(image)
-            
+            image_embedding = self.model.encode_image(str(image_url), truncate_dim=512)
+
             # Calculate cosine similarity between text and image embeddings
             if text_embedding is not None and image_embedding is not None:
                 # Calculate cosine similarity
