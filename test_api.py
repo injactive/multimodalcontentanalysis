@@ -18,6 +18,9 @@ import time
 import requests
 from typing import Dict, Any
 
+import argparse
+
+
 
 class APITester:
     """Test client for the Multi-Modal Content Analysis API."""
@@ -57,11 +60,12 @@ class APITester:
         print(f"   Text: {text[:100]}{'...' if len(text) > 100 else ''}")
         print(f"   Image URL: {image_url}")
         
-        try:
-            payload = {
-                "text": text,
-                "image_url": image_url
-            }
+        try:            
+            payload = dict()
+            if text != "":
+                payload["text"] = text
+            if image_url != "":
+                payload["image_url"] = image_url
             
             start_time = time.time()
             response = self.session.post(
@@ -98,73 +102,63 @@ class APITester:
         print("=" * 50)
         
         # Text Features
-        text_features = result.get('text_features', {})
-        print(f"\n📝 TEXT ANALYSIS:")
-        print(f"   Sentiment: {text_features.get('sentiment_label', 'N/A')} "
-              f"(score: {text_features.get('sentiment_score', 0):.3f}, "
-              f"confidence: {text_features.get('confidence', 0):.3f})")
-        print(f"   Readability: {text_features.get('readability_score', 0):.1f}/100")
-        print(f"   Word count: {text_features.get('word_count', 0)}")
-        print(f"   Hashtags: {text_features.get('hashtag_count', 0)}")
-        print(f"   Mentions: {text_features.get('mention_count', 0)}")
-        print(f"   Emojis: {text_features.get('emoji_count', 0)}")
-        print(f"   Keywords: {', '.join(text_features.get('keywords', []))}")
+        try:
+            text_features_tmp = result.get('features', {})
+            text_features = text_features_tmp.get('text_features', {})
+            print(f"\n📝 TEXT ANALYSIS:")
+            print(f"   Sentiment: {text_features.get('sentiment_label', 'N/A')} "
+                f"(score: {text_features.get('sentiment_score', 0):.3f}, "
+                f"confidence: {text_features.get('confidence', 0):.3f})")
+            print(f"   Readability: {text_features.get('readability_score', 0):.1f}/100")
+            print(f"   Word count: {text_features.get('word_count', 0)}")
+            print(f"   Hashtags: {text_features.get('hashtag_count', 0)}")
+            print(f"   Mentions: {text_features.get('mention_count', 0)}")
+            print(f"   Emojis: {text_features.get('emoji_count', 0)}")
+            print(f"   Keywords: {', '.join(text_features.get('keywords', []))}")
+            print(f"   Content Coherence: {text_features_tmp.get('content_coherence', 0):.3f}")
+        except:
+            pass   
         
         # Image Features
-        image_features = result.get('image_features', {})
-        print(f"\n🖼️  IMAGE ANALYSIS:")
-        print(f"   Dimensions: {image_features.get('width', 0)}x{image_features.get('height', 0)}")
-        print(f"   Aspect ratio: {image_features.get('aspect_ratio', 0):.2f}")
-        print(f"   File size: {image_features.get('file_size_kb', 0):.1f} KB")
-        print(f"   Brightness: {image_features.get('brightness', 0):.3f}")
-        print(f"   Contrast: {image_features.get('contrast', 0):.3f}")
-        
+        try:
+            image_features = text_features_tmp.get('image_features', {})
+            print(f"\n🖼️  IMAGE ANALYSIS:")
+            print(f"   Dimensions: {image_features.get('width', 0)}x{image_features.get('height', 0)}")
+            print(f"   Aspect ratio: {image_features.get('aspect_ratio', 0):.2f}")
+            print(f"   File size: {image_features.get('file_size_kb', 0):.1f} KB")
+            print(f"   Brightness: {image_features.get('brightness', 0):.3f}")
+            print(f"   Contrast: {image_features.get('contrast', 0):.3f}")
+        except:
+            pass
+
         # Multi-modal Features
-        print(f"\n🔗 MULTI-MODAL ANALYSIS:")
-        print(f"   Text-Image Alignment: {result.get('text_image_alignment', 0):.3f}")
-        print(f"   Overall Quality Score: {result.get('overall_quality_score', 0):.3f}")
+        try:
+            print(f"\n🔗 MULTI-MODAL ANALYSIS:")
+            print(f"   Text-Image Alignment: {text_features_tmp.get('text_image_similarity', 0):.3f}")
+        except:
+            pass
         
         # Engagement Prediction
-        engagement = result.get('engagement_prediction', {})
+        engagement = result.get('prediction', {})
         print(f"\n🎯 ENGAGEMENT PREDICTION:")
-        print(f"   Score: {engagement.get('engagement_score', 0):.1f}/100")
+        print(f"   Score: {engagement.get('score', 0):.1f}/100")
         
-        confidence_interval = engagement.get('confidence_interval', [0, 0])
-        print(f"   Confidence Interval: [{confidence_interval[0]:.1f}, {confidence_interval[1]:.1f}]")
-        
-        print(f"   Explanation: {engagement.get('explanation', 'N/A')}")
-        
-        # Success Factors
-        success_factors = engagement.get('success_factors', [])
-        if success_factors:
-            print(f"\n✅ SUCCESS FACTORS:")
-            for factor in success_factors:
-                print(f"   • {factor}")
-        
-        # Risk Factors
-        risk_factors = engagement.get('risk_factors', [])
-        if risk_factors:
-            print(f"\n⚠️  RISK FACTORS:")
-            for factor in risk_factors:
-                print(f"   • {factor}")
-        
-        # Feature Importance
-        feature_importance = engagement.get('feature_importance', {})
-        if feature_importance:
-            print(f"\n📈 FEATURE IMPORTANCE:")
-            sorted_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)
-            for feature, importance in sorted_features[:5]:  # Top 5
-                print(f"   {feature}: {importance:.1f}%")
-        
-        print(f"\n⏱️  Processing time: {result.get('processing_time_ms', 0):.2f}ms")
+        confidence = engagement.get('confidence', 0)
+        print(f"   Confidence: {confidence:.1f}")
+       
         print("=" * 50)
 
 
 def main():
     """Main test function."""
+
+    parser = argparse.ArgumentParser(description="Parse Arguments")
+    parser.add_argument("Test_Cases_JSON", default="testcases.json")
+    args = parser.parse_args()
+
     print("🚀 Multi-Modal Content Analysis API Test")
     print("=" * 50)
-    
+
     # Initialize tester
     tester = APITester()
     
@@ -174,6 +168,11 @@ def main():
         return
     
     # Test cases
+    # Load JSON data from file
+    with open(args.Test_Cases_JSON, 'r') as file:
+        test_cases = json.load(file)
+
+    """
     test_cases = [
         {
             "name": "Positive Travel Post",
@@ -196,34 +195,33 @@ def main():
             "image_url": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&h=600&fit=crop"
         }
     ]
+    """
     
     # Run test cases
     for i, test_case in enumerate(test_cases, 1):
-        print(f"\n🧪 TEST CASE {i}: {test_case['name']}")
+        print(f"\n🧪 TEST CASE {i}")
         print("-" * 30)
+
+        send_text = ""
+        send_image_url = ""
+        list_test_case_keys = list(test_case.keys())
+        if "text" in list_test_case_keys:
+            send_text = test_case['text']
+        if 'image_url' in list_test_case_keys:
+            send_image_url = test_case['image_url']
+
         
         result = tester.test_analyze_post(
-            text=test_case['text'],
-            image_url=test_case['image_url']
+            text=send_text,
+            image_url=send_image_url
         )
         
-        if result:
-            engagement_score = result.get('engagement_prediction', {}).get('engagement_score', 0)
-            print(f"\n🏆 Final Score: {engagement_score:.1f}/100")
-        
+      
         # Wait between requests to be nice to the API
         if i < len(test_cases):
-            print("\n⏳ Waiting 2 seconds before next test...")
             time.sleep(2)
     
     print(f"\n🎉 All tests completed!")
-    print("\n💡 Tips for running your own tests:")
-    print("   • Use high-quality, relevant images")
-    print("   • Include emojis and hashtags in your text")
-    print("   • Ensure text and image are well-aligned")
-    print("   • Try different sentiment tones")
-    print("   • Test various image aspect ratios")
-
 
 if __name__ == "__main__":
     main()
