@@ -13,7 +13,7 @@ The Multi-Modal Content Analysis API solution for analyzing text and image conte
 ### 🎯 Key Features
 
 - **🧠 JinaCLIP v2 Integration**: State-of-the-art multimodal AI model
-- **📊 Engagement Prediction**: ML-powered engagement scoring (0-100) with confidence intervals
+- **📊 Engagement Prediction**: ML-powered engagement scoring (0-100) with confidence estimation
 - **🌍 Multilingual Support**: Excellent performance in German, Spanish, French, and more
 - **📈 MLflow Integration**: Comprehensive experiment tracking and ML observability
 - **🔒 Production Security**: SSRF protection, input validation, rate limiting
@@ -53,7 +53,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 # - Health: http://localhost:8000/health
 
 # Run Demonstrator (in separate terminal with same virtual enviroment)
-python demo.py
+python demo.py testcases.json
 
 # Run MLFlow for validating results (in separate terminal with same virtual enviroment)
 mlflow ui
@@ -70,10 +70,42 @@ mlflow ui
    Version: 0.0.1
    Models loaded: True
 
-🧪 TEST CASE 1: Positive Travel Post
+🧪 TEST CASE 1
 ------------------------------
 
 🔍 Testing post analysis...
-   Text: Just had the most amazing sunset experience! 🌅 The colors were absolutely breathtaking and I feel so...
-   Image URL: https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop
+   Text: 🎉 Amazing new product launch! This is absolutely incredible and I love it so much! Check out the bea...
+   Image URL: https://picsum.photos/800/600
+✅ Analysis completed in 133600.33ms
+
+📊 ANALYSIS RESULTS
+==================================================
+
+📝 TEXT ANALYSIS:
+   Sentiment: positive (score: 0.502, confidence: 0.000)
+   Readability: 48.7/100
+   Word count: 28
+   Hashtags: 0
+   Mentions: 0
+   Emojis: 2
+   Keywords: amazing, love, new, product, launch, absolutely, incredible, much, check, out
+
+🖼️  IMAGE ANALYSIS:
+   Dimensions: 512x384
+   Aspect ratio: 1.33
+   File size: 0.0 KB
+   Brightness: 0.500
+   Contrast: 0.500
+
+🔗 MULTI-MODAL ANALYSIS:
+   Text-Image Alignment: 0.000
+   Content Coherence: 0.000
+
+🎯 ENGAGEMENT PREDICTION:
+   Score: 70.2/100
+   Confidence: 0.6
+==================================================
 ```
+
+### Adjusting Test Cases
+You can use your own test cases by providing a json file which consists of a list of dictionaries with test and image_url keys.
