@@ -37,7 +37,7 @@ from src.models.domain import (
 # Service for multimodal (text + image) feature extraction
 from src.services.jinaclip_feature_extraction import JinaCLIPFeatureExtractionService
 
-from src.services.engagement_preditction import generate_engagement_prediction
+from src.services.engagement_prediction import generate_engagement_prediction
 
 # Dependency injection and configuration utilities
 from src.core.dependencies import (
@@ -49,6 +49,7 @@ from src.core.dependencies import (
 from src.utils.logger import (
     setup_logging, get_logger, with_correlation_id, with_performance_logging
 )
+from src.utils.test_cases import complete_testcase_request
 
 # Configuration settings
 from config.settings import APISettings
@@ -78,18 +79,7 @@ app = FastAPI(
     An API that analyzes influencer posts (text + images) 
     to predict engagement potential using JinaCLIP v2 - the latest state-of-the-art 
     multimodal model with superior performance over traditional CLIP.
-    
-    ## Features
-    - **JinaCLIP v2 Integration**: Latest multimodal model with improved performance
-    - **Multilingual Support**: Enhanced language understanding capabilities
-    - **High-Resolution Processing**: Better image analysis with higher resolution support
-    - **Advanced Embeddings**: State-of-the-art text-image alignment
-    - **MLflow Integration**: Comprehensive experiment tracking
-    - **Structured Logging**: JSON logging with correlation IDs
-    - **Security**: SSRF protection, input validation, rate limiting
-    - **Performance**: Async I/O, caching, optimized processing
-    - **Monitoring**: Health checks, metrics, performance tracking
-    
+  
     """,
     version="0.0.1",
     docs_url="/docs",
@@ -250,17 +240,23 @@ async def analyze_post(
     Raises:
         HTTPException: If analysis fails or input is invalid
     """
+
+    if request.text is None and request.image_url is None:
+        return AnalysisResponse()
+
     start_time = time.time()
     request_id = f"req_{int(time.time() * 1000)}"
     
     logger.info(
         "Starting content analysis",
         request_id=request_id,
-        content_type=request.content_type.value,
+        content_type=request.content_type,
         text_length=len(request.text),
         has_image=request.image_url is not None
     )
-    
+
+    request = complete_testcase_request(request)
+
     try:
         # Step 1: Extract multimodal features
         features = await feature_service.extract_features(request, request_id)
@@ -341,7 +337,7 @@ async def _log_comprehensive_analysis_to_mlflow(
                 "content_type": str(request.content_type),
                 "has_image": request.image_url is not None,
                 "model_version": "jinaclip-v2",
-                "api_version": "2.0.0"
+                "api_version": "0.0.1"
             }
         )
         
@@ -396,7 +392,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "embedding_dimension": 768,
             "prediction_algorithm": "weighted_combination",
             "confidence_method": "feature_quality_based",
-            "version": "2.0.0"
+            "version": "0.0.1"
         }
         
         # Log detailed engagement prediction
