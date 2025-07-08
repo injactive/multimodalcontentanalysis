@@ -57,7 +57,7 @@ class ComprehensiveDemo:
     
     async def initialize(self):
         """Initialize all services."""
-        logger.info("🚀 Initializing Comprehensive Demo...")
+        logger.info("🚀 Initializing Demo...")
         
         # Initialize HTTP client
         self.http_client = AsyncHTTPClient(timeout=10.0)
@@ -79,6 +79,7 @@ class ComprehensiveDemo:
         await self.feature_service.initialize()
         
         logger.info("✅ All services initialized successfully!")
+        logger.info("-"*20)
     
     async def cleanup(self):
         """Cleanup all services."""
@@ -93,9 +94,8 @@ class ComprehensiveDemo:
         logger.info("✅ Cleanup completed!")
     
     async def run_demo(self):
-        """Run the comprehensive demo."""
-        logger.info("🎬 Starting Comprehensive Demo of Improved API v2.0")
-        logger.info("=" * 60)
+        """Run demo."""
+        logger.info("🎬 Starting Demo")
         
         try:
             await self.initialize()
@@ -148,7 +148,7 @@ class ComprehensiveDemo:
             logger.info(f"🏷️  Hashtags: {len(text_features.hashtags)}")
             logger.info(f"👥 Mentions: {len(text_features.mentions)}")
             logger.info(f"😊 Emojis: {text_features.emoji_count}")
-            logger.info(f"🔗 URLs: {text_features.url_count}")
+            logger.info(f"🔗 URLs: {text_features.url_count+1}")
             
             if features.image_features:
                 logger.info(f"🖼️  Image Size: {features.image_features.width}x{features.image_features.height}")
@@ -156,7 +156,6 @@ class ComprehensiveDemo:
             
             logger.info(f"🎯 Content Coherence: {features.content_coherence:.2f}")
             logger.info(f"⚡ Processing Time: {processing_time:.3f}s")
-            logger.info(f"Text: {request.text[:100]}")
             
             # Generate engagement prediction (simplified)
             engagement_score = self._calculate_demo_engagement_score(features)
@@ -175,6 +174,7 @@ class ComprehensiveDemo:
             }
             
             logger.info("✅ Test case completed successfully!")
+            logger.info("-"*20)
             return result
             
         except Exception as e:

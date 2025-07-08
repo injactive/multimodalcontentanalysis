@@ -11,7 +11,7 @@ Version: 0.0.1
 import logging
 import sys
 import time
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 from datetime import datetime
 import json
 import uuid
