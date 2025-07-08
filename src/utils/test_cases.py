@@ -42,3 +42,23 @@ def import_testcases(file_str: str) -> list[dict]:
         })
 
     return transformed_test_cases
+
+
+import json
+from src.models.domain import AnalysisRequest, ContentType
+
+
+def complete_testcase_request(request: AnalysisRequest) -> AnalysisRequest:
+    """
+    Transform test case request from a JSON file.
+
+    """
+
+    if request.text is None:
+        request.content_type = ContentType.IMAGE
+    elif request.image_url is None:
+        request.content_type = ContentType.TEXT
+    else:
+        request.content_type = ContentType.MULTIMODAL
+
+    return request
