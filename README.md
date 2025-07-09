@@ -38,24 +38,27 @@ pip install -r requirements.txt
 ```
 
 ### Demo Run
-
+Start the API
 ```bash
-# Start the API
 python main.py
+```
 
-# Wait until the following can be seen
+Before continuing, wait until the following can be seen in terminal
+```bash
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+API will be available at:
+- API: http://localhost:8000
+- Docs: http://localhost:8000/docs
+- Health: http://localhost:8000/health
 
-# API will be available at:
-# - API: http://localhost:8000
-# - Docs: http://localhost:8000/docs
-# - Health: http://localhost:8000/health
-
-# Run Demonstrator (in separate terminal with same virtual enviroment)
+Run Test Cases (in separate terminal with same virtual enviroment)
+```bash
 python demo.py testcases.json
-
-# Run MLFlow for validating results (in separate terminal with same virtual enviroment)
+```
+Run MLFlow for validating results (in separate terminal with same virtual enviroment)
+```bash
 mlflow ui
 # MLFlow will be available at http://localhost:5000
 ```
