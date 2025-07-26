@@ -76,7 +76,7 @@ class MLflowTracker:
                         self.experiment_name,
                         tags={
                             "project": "multimodal-content-analysis",
-                            "version": "2.0.0",
+                            "version": "0.0.1",
                             "created_at": datetime.utcnow().isoformat()
                         }
                     )
@@ -125,7 +125,7 @@ class MLflowTracker:
             # Prepare tags
             run_tags = {
                 "start_time": datetime.utcnow().isoformat(),
-                "api_version": "2.0.0",
+                "api_version": "0.0.1",
                 "run_type": "feature_extraction"
             }
             if tags:
