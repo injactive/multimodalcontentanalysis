@@ -1,6 +1,5 @@
 # 🚀 Multi-Modal Content Analysis API
 
-[![CI/CD Pipeline](https://github.com/injactive/multimodalcontentanalysis/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/username/multimodal-content-analysis/actions)
 [![Python 3.13.2](https://img.shields.io/badge/python-3.13.2-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.14-009688.svg)](https://fastapi.tiangolo.com)
 [![JinaCLIP v2](https://img.shields.io/badge/JinaCLIP-v2-orange.svg)](https://huggingface.co/jinaai/jina-clip-v2)
