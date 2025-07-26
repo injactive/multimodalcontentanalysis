@@ -1,0 +1,16 @@
+curl -X POST "http://localhost:8000/analyze-post" \                        
+  -H "Content-Type: application/json" \                                                                                                                         
+  -d '{                                                
+    "text": "Amazing product! Love it! 😍 #awesome #love",
+    "content_type": "text"
+  }'
+
+  curl -X POST "http://localhost:8000/analyze-post" \                        
+  -H "Content-Type: application/json" \                                                                                                                         
+  -d '{                                                
+    "text": "\ud83d\udd0d State of AI in Social Media Marketing \n\n\ud83d\udcca Performance-Metriken allein reichen nicht aus, um echte Relevanz auf Social Media zu schaffen. Die Agentur Intermate geht einen Schritt weiter: Ihr entwickeltes KI-gest\u00fctztes Tool kombiniert quantitative Daten mit qualitativen Insights \u2013 von Sentiment-Analysen \u00fcber Top-Themen der Creator bis hin zu Community-Insights.\n\nIn seinem Impulsvortrag zeigt Maurice van gen Hassend (Gen Z Lead, Intermate), wie Marken mit diesem Tool datenbasiert und gezielt auf Social Media kommunizieren und ihre Social-Media-Strategie zielgerichtet optimieren k\u00f6nnen.\n\n\ud83c\udf9f\ufe0f Jetzt Ticket sichern & nichts verpassen! (Link in Bio)\n\n#gces2025 #CreativeEconomy #Impuls #Strategy",
+    "image_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.2885-15/481852385_17900222301110484_6182392116209093217_n.jpg?stp=dst-jpg_e15_fr_p1080x1080_tt6&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QEx54E0xglZUfTKJqPwoacHDGMG5D6TBxKJyuCtw23blvKeoSYDEa15qxibACwGG-0&_nc_ohc=aSdTbBRQsusQ7kNvwGGZZze&_nc_gid=MAhurlWmqS1-Y1oTfByxHg&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfTxWbpQvu2Ki-ix6V657PLfMyq-20Ml-tAY9-kxhWYiHQ&oe=6889C646&_nc_sid=10d13b"
+    "content_type": "multimodal"
+  }'
+
+  {"name": "intermate_agency_https://www.instagram.com/p/DGkbWtso_Qg/", "text": "\ud83d\udd0d State of AI in Social Media Marketing \n\n\ud83d\udcca Performance-Metriken allein reichen nicht aus, um echte Relevanz auf Social Media zu schaffen. Die Agentur Intermate geht einen Schritt weiter: Ihr entwickeltes KI-gest\u00fctztes Tool kombiniert quantitative Daten mit qualitativen Insights \u2013 von Sentiment-Analysen \u00fcber Top-Themen der Creator bis hin zu Community-Insights.\n\nIn seinem Impulsvortrag zeigt Maurice van gen Hassend (Gen Z Lead, Intermate), wie Marken mit diesem Tool datenbasiert und gezielt auf Social Media kommunizieren und ihre Social-Media-Strategie zielgerichtet optimieren k\u00f6nnen.\n\n\ud83c\udf9f\ufe0f Jetzt Ticket sichern & nichts verpassen! (Link in Bio)\n\n#gces2025 #CreativeEconomy #Impuls #Strategy", "image_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.2885-15/481852385_17900222301110484_6182392116209093217_n.jpg?stp=dst-jpg_e15_fr_p1080x1080_tt6&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QEx54E0xglZUfTKJqPwoacHDGMG5D6TBxKJyuCtw23blvKeoSYDEa15qxibACwGG-0&_nc_ohc=aSdTbBRQsusQ7kNvwGGZZze&_nc_gid=MAhurlWmqS1-Y1oTfByxHg&edm=APs17CUBAAAA&ccb=7-5&oh=00_AfTxWbpQvu2Ki-ix6V657PLfMyq-20Ml-tAY9-kxhWYiHQ&oe=6889C646&_nc_sid=10d13b"}
