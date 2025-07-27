@@ -8,18 +8,15 @@ Author: Christian Kruschel
 Version: 0.0.1
 """
 
-import asyncio
 import time
 import os
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, Union
 from datetime import datetime
 import json
 import uuid
 
 import mlflow
-import mlflow.sklearn
 from mlflow.tracking import MlflowClient
-import structlog
 
 from ..utils.logger import get_logger
 
@@ -539,11 +536,11 @@ class MLflowTracker:
                 "processing_metrics": processing_metrics,
                 "timestamp": datetime.utcnow().isoformat()
             }
-            await self.log_artifact(
-                run_id,
-                "analysis_results/complete_analysis.json",
-                complete_results
-            )
+            # await self.log_artifact(
+            #     run_id,
+            #     "analysis_results/complete_analysis.json",
+            #     complete_results
+            # )
             
             # Feature summary for quick analysis
             feature_summary = {
@@ -562,11 +559,11 @@ class MLflowTracker:
                     "success": True
                 }
             }
-            await self.log_artifact(
-                run_id,
-                "summaries/feature_summary.json",
-                feature_summary
-            )
+            # await self.log_artifact(
+            #     run_id,
+            #     "summaries/feature_summary.json",
+            #     feature_summary
+            # )
             
             self.logger.info(
                 "Logged comprehensive analysis to MLflow",
