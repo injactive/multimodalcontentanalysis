@@ -54,6 +54,9 @@ from src.utils.test_cases import complete_testcase_request
 # Configuration settings
 from config.settings import APISettings
 
+from src.utils.mlflow_tracker import MLflowTracker
+
+
 # Initialize structured logging
 setup_logging()
 logger = get_logger(__name__)
@@ -79,7 +82,6 @@ app = FastAPI(
     An API that analyzes influencer posts (text + images) 
     to predict engagement potential using JinaCLIP v2 - the latest state-of-the-art 
     multimodal model with superior performance over traditional CLIP.
-  
     """,
     version="0.0.1",
     docs_url="/docs",
@@ -326,8 +328,9 @@ async def _log_comprehensive_analysis_to_mlflow(
     try:
         # Get MLflow tracker from dependency injection
         container = get_service_container()
-        mlflow_tracker = container.mlflow_tracker
+        mlflow_tracker = container.get_service('mlflow_tracker')
         
+        print("#")
         # Start comprehensive analysis run
         run_id = await mlflow_tracker.start_run(
             run_name=f"comprehensive_analysis_{request_id}",
@@ -340,7 +343,7 @@ async def _log_comprehensive_analysis_to_mlflow(
                 "api_version": "0.0.1"
             }
         )
-        
+        print("##")
         # Prepare request data for logging
         request_data = {
             "text": request.text,
@@ -348,7 +351,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "image_url": request.image_url,
             "request_id": request_id
         }
-        
+        print("###")
         # Prepare features data
         features_data = {
             "text_features": features.text_features.__dict__ if features.text_features else {},
@@ -357,7 +360,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "text_image_similarity": features.text_image_similarity,
             "processing_time": processing_time
         }
-        
+        print("####")
         # Prepare engagement prediction data
         engagement_data = {
             "score": engagement_prediction.score,
@@ -365,7 +368,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "level": engagement_prediction.level.value if hasattr(engagement_prediction.level, 'value') else str(engagement_prediction.level),
             "factors": getattr(engagement_prediction, 'factors', {})
         }
-        
+        print("#####")
         # Prepare processing metrics
         processing_metrics = {
             "total_time": processing_time,
@@ -373,7 +376,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "prediction_time": processing_time * 0.2,  # Estimated prediction time
             "response_time": processing_time * 0.1  # Estimated response preparation time
         }
-        
+        print("######")
         # Log comprehensive analysis
         await mlflow_tracker.log_comprehensive_analysis(
             run_id=run_id,
@@ -382,7 +385,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             engagement_prediction=engagement_data,
             processing_metrics=processing_metrics
         )
-        
+        print("#######")
         # Calculate feature contributions for detailed logging
         feature_contributions = _calculate_feature_contributions(features, engagement_prediction)
         
@@ -394,7 +397,7 @@ async def _log_comprehensive_analysis_to_mlflow(
             "confidence_method": "feature_quality_based",
             "version": "0.0.1"
         }
-        
+        print("########")
         # Log detailed engagement prediction
         await mlflow_tracker.log_engagement_prediction_details(
             run_id=run_id,
@@ -402,10 +405,10 @@ async def _log_comprehensive_analysis_to_mlflow(
             feature_contributions=feature_contributions,
             model_metadata=model_metadata
         )
-        
+        print("#########")
         # End the run
         await mlflow_tracker.end_run(run_id, "FINISHED")
-        
+        print("##########")
         logger.debug(
             "Comprehensive analysis logged to MLflow",
             request_id=request_id,
