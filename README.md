@@ -54,7 +54,7 @@ API will be available at:
 
 Run Test Cases (in separate terminal with same virtual enviroment)
 ```bash
-python demo.py testcases.json
+python test_api.py testcases.json
 ```
 Run MLFlow for validating results (in separate terminal with same virtual enviroment)
 ```bash
